@@ -4,7 +4,7 @@
  * LAST DATE MOTIFIED: 23 October 2017                                         *
  *                                                                             *
  * PURPOSE: The point of this program is to illustrate how an algorithm can    *
- * modify its behavior by learning and adapting during evolutio                *
+ * modify its behavior by learning and adapting during evolution                *
  *                                                                             *
  * Obviously a good algorithm designer, with external knowledge of the         *
  * system, the robot's position, and environment and constraints could design  *
@@ -31,6 +31,7 @@
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
+#include <sys/time.h>
 #include "constants.h"
 #include "context.h"
 #include "robby.h"
@@ -49,8 +50,8 @@ int main(int argc, char **argv) {
     int sessionScores = 0;
     int fieldMatrix[10][10];
     int c;
-    int nr_generations = 1000;
-    int nr_steps = 200;
+    int nr_generations = GENERATIONS;
+    int nr_steps = STEPS;
 
     while (1)
     {
@@ -170,8 +171,30 @@ int main(int argc, char **argv) {
         // while not enough in the child population
         while (populationCount < NR_AGENTS)
         {
-            int father = 0;
-            int mother = 2;
+            // int father = 0;
+            int best = 0;
+            for (int i = 0; i < SURVIVORS; i++)
+            {
+                int index = rand() % SURVIVORS;
+                if ((best == 0) || survivors[index].getScore() > survivors[best].getScore())
+                    best = index;
+
+            }
+            int father = best;
+
+            // int mother = 2;
+            best = 0;
+            for (int j = 0; j < SURVIVORS; j++)
+            {
+                int index = rand() % SURVIVORS;
+                if (!(best == father))
+                    if ((best == 0) || survivors[index].getScore() > survivors[best].getScore())
+                        best = index;
+
+            }
+            int mother = best;
+
+
             Strategy *temp;
 
             // first child for one parent pair
@@ -205,8 +228,10 @@ int main(int argc, char **argv) {
 
         if (genCounter % 10 == 0)
         {
+            cout << "GENERATIONS " << genCounter << "-" << genCounter + 9 << endl;
             st.printStore();
             cout << endl << "generation average similarity: " << st.averageSimilarity() << endl;
+            cout << endl << "**********************************************" << endl;
         }
 
         if (genCounter < nr_generations - 1)
@@ -219,7 +244,9 @@ int main(int argc, char **argv) {
     st.printStore();
 
     /**************************************************************************/
-    // testrun the winning strategy for same number of sessions as the generations did
+    // Testrun the winning strategy for same number of sessions as the
+    // generations did.
+
     Robby winningAgent;
     Strategy winner;
     st.getOne(winner, 0);
