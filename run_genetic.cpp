@@ -4,25 +4,26 @@
  * LAST DATE MOTIFIED: 23 October 2017                                         *
  *                                                                             *
  * PURPOSE: The point of this program is to illustrate how an algorithm can    *
- * modify its behavior by learning and adapting during evolution                *
- *                                                                             *
- * Obviously a good algorithm designer, with external knowledge of the         *
- * system, the robot's position, and environment and constraints could design  *
- * an algorithm that can avoid bouncing into walls etc, but the point is that  *
+ * modify its behavior by learning and adapting during evolution. The          *
+ * programmer defines the evolution rules, and let's the program itself        *
+ * figure out an optimal algorithm.                                            * *                                                                             *
  * Robby has no other knowledge of the system than his current context,        *
  * i.e. he does not know how large the system is, what shape it is, or any     *
  * other information except his current context.                               *
- *                                                                             *
- * Thus, instead of the programmer with intrinsic knowledge designing an       *
- * algorithm for Robby, the programmer defines the evolution rules, and let's  *
- * the program itself figure out an optimal algorithm.                         *
  *                                                                             *
  * NOTES:                                                                      *
  * Max theoretical score: 500 (~50 cans x 10 points)                           *
  * Min theoretical score: -5 * STEPS  = -1000 with 200 steps                   *
  *                                                                             *
+ * MODIFICATIONS:                                                              *
+ * 1. Fixed format to follow NASA C style standards.                           *
+ * 2. Changed the evolution selection from elitism to tournament selection.    *
+ * 3. Winning strategy is written to array.txt to communicate with the second  *
+ *    program benchmarkWinningStrategy.                                        *
+ *                                                                             *
  * REFERENCES:                                                                 *
- * [1] https://github.com/tolex3/genetic                                       *
+ * [1] tolex3. “genetic”. GitHub, 14 March 2012,                               *
+ *     https://github.com/tolex3/genetic. 23 October 2017.                     *
  ******************************************************************************/
 
 #include <stdio.h>
@@ -43,6 +44,8 @@ using namespace std;
 Strategy s;
 StrategyStore st;
 
+/******************************************************************************/
+/* Main function. */
 int main(int argc, char **argv) {
 
     int genCounter = 0;
@@ -65,12 +68,12 @@ int main(int argc, char **argv) {
             {0, 0, 0, 0}
         };
 
-        // getopt_long stores the option index here.
+        /* getopt_long stores the option index here. */
         int option_index = 0;
 
         c = getopt_long (argc, argv, "g:s:", long_options, &option_index);
 
-        // Detect the end of the options.
+        /* Detect the end of the options. */
         if (c == -1)
             break;
 
@@ -98,7 +101,7 @@ int main(int argc, char **argv) {
     srand(time(NULL));
 
     /**************************************************************************/
-    // initialize agents
+    /* Initialize agents. */
     Robby agentArray [NR_AGENTS];
 
     for (int agent = 0; agent < NR_AGENTS; agent++)
@@ -108,13 +111,14 @@ int main(int argc, char **argv) {
     }
 
     /**************************************************************************/
-    // while not done
+    /* While not finished with GENERATIONS. */
     while (genCounter < nr_generations)
     {
         for (int agent = 0; agent < NR_AGENTS; agent++)
         {
             agentArray[agent].resetStatistics();
 
+            /* All sessions for an agent. */
             for (int session = 0; session < SESSIONS; session++)
             {
                 agentArray[agent].setPos(0, 0);
@@ -123,34 +127,31 @@ int main(int argc, char **argv) {
 
                 for (int steps = 0; steps < nr_steps; steps++)
                 {
-                    /* make one step by figuring out current context, getting
+                    /* Make one step by figuring out current context, getting
                      * the index for that context, getting the action for that
-                     * index */
+                     * index. */
                     agentArray[agent].updateContext();
                     agentArray[agent].makeMove(agentArray[agent].getStrategy().getAction(agentArray[agent].getContext().getCoding()), false);
-                } // end steps
+                }
 
-                // register score for this session
+                /* Register score for this session. */
                 sessionScores  += agentArray[agent].getPoints();
-            } // END SESSIONS(k): all sessions for an agent done
+            }
 
             int sessionAvg = 0;
             sessionAvg = sessionScores / SESSIONS;
             sessionScores = 0;
 
             agentArray[agent].getStrategy().updateScore(sessionAvg);
-        } // end agents
+        }
 
         for (int i = 0; i < NR_AGENTS; i++)
         {
-            // cout << endl << "agent session scores:" << "agent:" << i << " " << agentArray[i].getStrategy().getScore();
-
             if (! (st.exists(agentArray[i].getStrategy())))
                 st.addStrategy(agentArray[i].getStrategy());
         }
 
-        /* Create child population
-         * */
+        /* Create child population. */
         populationCount = 0;
         Strategy survivors[SURVIVORS];
 
@@ -168,12 +169,14 @@ int main(int argc, char **argv) {
             populationCount++;
         }
 
-        // while not enough in the child population
+        /* While not enough in the child population. */
         while (populationCount < NR_AGENTS)
         {
-            // int father = 0;
+            /* Modified to use tournament selection.
+             * Select 3 individuals from the population at random and select the
+             * best out of these to become a parent. Repeat for next parent. */
             int best = 0;
-            for (int i = 0; i < SURVIVORS; i++)
+            for (int i = 0; i < 3; i++)
             {
                 int index = rand() % SURVIVORS;
                 if ((best == 0) || survivors[index].getScore() > survivors[best].getScore())
@@ -182,9 +185,8 @@ int main(int argc, char **argv) {
             }
             int father = best;
 
-            // int mother = 2;
             best = 0;
-            for (int j = 0; j < SURVIVORS; j++)
+            for (int j = 0; j < 3; j++)
             {
                 int index = rand() % SURVIVORS;
                 if (!(best == father))
@@ -194,29 +196,28 @@ int main(int argc, char **argv) {
             }
             int mother = best;
 
-
             Strategy *temp;
 
-            // first child for one parent pair
+            /* First child for one parent pair. */
             temp = copulate(survivors[father], survivors[mother]);
             agentArray[populationCount].setStrategy(*temp);
             agentArray[populationCount].getStrategy().setBirthGeneration(genCounter);
             delete temp;
 
-            // second child for one parent pair
+            /* Second child for one parent pair. */
             temp = copulate(survivors[mother], survivors[father]);
             agentArray[populationCount].setStrategy(*temp);
             agentArray[populationCount].getStrategy().setBirthGeneration(genCounter);
             delete temp;
 
-            // mutate a fraction of the children
+            /* Mutate a fraction of the children. */
             if (rand() % 4 == 0)
             {
                 agentArray[populationCount].getStrategy().mutate();
                 agentArray[populationCount].getStrategy().updateMutationCount();
             }
 
-            // decrease the likelihood of lower performing parents to breed
+            /* Decrease the likelihood of lower performing parents to breed. */
             if (rand() % 10 == 0)
             {
                 father += 2;
@@ -238,15 +239,14 @@ int main(int argc, char **argv) {
             st.resetRanks();
 
         genCounter++;
-    } // end generations
+    }
 
     cout << endl << "FINAL RANKINGS after " << genCounter << " generations " << endl;
     st.printStore();
 
     /**************************************************************************/
-    // Testrun the winning strategy for same number of sessions as the
-    // generations did.
-
+    /* Testrun the winning strategy for same number of sessions as the
+     * generations did. */
     Robby winningAgent;
     Strategy winner;
     st.getOne(winner, 0);

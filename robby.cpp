@@ -1,4 +1,16 @@
-
+/*******************************************************************************
+ * FILE NAME: robby.cpp                                                        *
+ * AUTHOR: Summer Turner                                                       *
+ * LAST DATE MOTIFIED: 23 October 2017                                         *
+ *                                                                             *
+ * MODIFICATIONS:                                                              *
+ * 1. Fixed warning from makeMove() function, to be more consistent and        *
+ *    coherent, I changed the function to be declared to return void.          *
+ *                                                                             *
+ * REFERENCES:                                                                 *
+ * [1] tolex3. “genetic”. GitHub, 14 March 2012,                               *
+ *     https://github.com/tolex3/genetic. 23 October 2017.                     *
+ ******************************************************************************/
 
 #include <cstdlib>
 #include <ctime>

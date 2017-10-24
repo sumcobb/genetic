@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * FILE NAME: strategy.cpp                                                     *
+ * LAST DATE MOTIFIED: 23 October 2017                                         *
+ *                                                                             *
+ * REFERENCES:                                                                 *
+ * [1] tolex3. “genetic”. GitHub, 14 March 2012,                               *
+ *     https://github.com/tolex3/genetic. 23 October 2017.                     *
+ ******************************************************************************/
 
 #include <cstdlib>
 #include <ctime>

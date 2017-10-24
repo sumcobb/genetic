@@ -1,5 +1,13 @@
-#include <iostream>
+/*******************************************************************************
+ * FILE NAME: strategyStore.cpp                                                *
+ * LAST DATE MOTIFIED: 23 October 2017                                         *
+ *                                                                             *
+ * REFERENCES:                                                                 *
+ * [1] tolex3. “genetic”. GitHub, 14 March 2012,                               *
+ *     https://github.com/tolex3/genetic. 23 October 2017.                     *
+ ******************************************************************************/
 
+#include <iostream>
 #include "strategyStore.h"
 
 using namespace std;
@@ -51,12 +59,6 @@ void StrategyStore::addStrategy(Strategy& s)
 
 void StrategyStore::printStore(void)
 {
-    for (int i = 0; i < NR_AGENTS; i++)
-    {
-        //cout << endl << " position: " << i << " " << strategies [ i ].getScore ( ) << " birthGen: " << strategies [ i ].getBirthGeneration ( );
-        //cout << " mutationCount: " << strategies [ i ].getMutationCount ( ) ;
-        // strategies [ i ].printStrategy ( );
-    }
     cout << endl << "PrintStore::generation top session score: " << strategies[0].getScore() << endl;
 }
 

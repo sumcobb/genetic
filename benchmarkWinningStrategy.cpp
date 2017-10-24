@@ -1,12 +1,14 @@
 /*******************************************************************************
- * Summer Turner                                                               *
+ * FILE NAME: benchmarkWinningStrategy.cpp                                     *
+ * LAST DATE MOTIFIED: 23 October 2017                                         *
  *                                                                             *
+ * PURPOSE: The point of this program is display a visualization of a winning  *
+ * strategy for 6 different enerations of evolution.                           *
  *                                                                             *
+ * REFERENCES:                                                                 *
+ * [1] tolex3. “genetic”. GitHub, 14 March 2012,                               *
+ *     https://github.com/tolex3/genetic. 23 October 2017.                     *
  ******************************************************************************/
-
-// TODO: If Robby stands on a box with a can, and does not pick it up,
-// then the can icon will still be replaced to a point. Should add
-// check that if action != pick up, the can icon should not be overwritten.
 
 #include <stdio.h>
 #include <cstdlib>
