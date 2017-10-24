@@ -1,6 +1,6 @@
 # Genetic
 
-Simple genetic algorithm. Initial code from [tolex3](https://github.com/tolex3/genetic).
+Simple genetic algorithm to better my own understanding of GAs. Initial code from [tolex3](https://github.com/tolex3/genetic). Main modifications to the code includes changing the selection process from elitism to tournament selection.
 
 Makefile builds two executables:
 
@@ -14,6 +14,8 @@ The first program runs a genetic evolution for the problem described in Michell'
 The grid contains a random distribution of beer cans, with a probability of ca 50% for any square to contain a can, i.e. there are about 50 cans for each session and each robot.
 
 The robot has limited cognition capabilities, it can only "see" the square it's currently standing on, plus the squares immediately to the North, East, South and West.
+
+The genetic algorithm starts with a population of 200 random strategies with 243 moves. Each move is a number which has an associated action. For the specified generations, the algorithm calculates the fitness of each strategy in the population and applies evolution to create a new population of 200 strategies. Using tournament selection, 3 individuals are selected from the surviving population randomly and the best out of these to becomes a parent. The same process is repeated for selecting the next parent. These two parents are then mated. Once the new population has 200 individuals, the fitness for this new generation is recalculated.
 
 Fitness function:
 If the robot succeeds in picking up a can on the current square, it is rewarded with 10 points. If it walks into the wall, it receives -5 points in punishment. If it tries to pick up a can on an empty square, it is punished with -1 point.
